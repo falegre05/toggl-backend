@@ -9,6 +9,8 @@ I've implemented all basic and bonus requirements plus some other endpoints I fo
 
 I've prepare two different users called Fer and Toggl as you can see in the populateDB file I've used to populate the database. Both users share a super secure password ("1234") but you can check they can only read and write on their own questions. There is a mutation to add a new user which do not need any token and a login query that, given the name and the password, returns the token to be used in the rest of the mutations and queries.
 
+Environment variables are set in the .vscode/launch.json if you launch it from the vscode and in the docker-compose.yml if you run it from there.
+
 Playground is enabled, so please, feel free to test it :)
 
 It should run just by executing the docker compose and the database should also be ready, but if it's not, the code will make sure that the tables exist and then you can use the populateDB.sql file to insert some data.
