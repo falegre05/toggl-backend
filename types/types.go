@@ -15,13 +15,14 @@ type Question struct {
 	ID      int      `json:"id" db:"id"`
 	Body    string   `json:"body" db:"body"`
 	Options []Option `json:"options,omitempty"`
+	UserID  int      `json:"user_id" db:"user_id"`
 }
 
 // User represents a user in the system
 type User struct {
-	ID       int    `json:"id" db:"id"`
-	Username string `json:"username" db:"username"`
-	Password string `json:"-" db:"password"`
+	ID           int    `json:"id" db:"id"`
+	Name         string `json:"name" db:"name"`
+	PasswordHash string `json:"-" db:"password_hash"`
 }
 
 // JWTClaims represents the claims in a JWT token

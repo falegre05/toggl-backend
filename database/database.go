@@ -15,9 +15,18 @@ func init() {
 
 	// Create tables if they don't exist
 	db.MustExec(`
+		CREATE TABLE IF NOT EXISTS users (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			name TEXT UNIQUE,
+			password_hash TEXT
+		);
+
 		CREATE TABLE IF NOT EXISTS questions (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
-			body TEXT
+			body TEXT,
+			user_id INTEGER,
+			FOREIGN KEY (user_id) REFERENCES users(id),
+			UNIQUE(body, user_id)
 		);
 
 		CREATE TABLE IF NOT EXISTS options (
@@ -25,13 +34,8 @@ func init() {
 			body TEXT,
 			correct BOOLEAN,
 			question_id INTEGER,
-			FOREIGN KEY (question_id) REFERENCES questions(id)
-		);
-
-		CREATE TABLE IF NOT EXISTS users (
-			id INTEGER PRIMARY KEY AUTOINCREMENT,
-			username TEXT,
-			password TEXT
+			FOREIGN KEY (question_id) REFERENCES questions(id),
+			UNIQUE(body, question_id)
 		);
 	`)
 }

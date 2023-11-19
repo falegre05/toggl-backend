@@ -9,9 +9,10 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${fileDirname}",
+            "program": "${cwd}/",
             "env": {
-                "PORT": "8080"
+                "PORT": "8080",
+                "SECRET_KEY": "lalala"
               },
         }
     ]

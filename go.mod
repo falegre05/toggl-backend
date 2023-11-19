@@ -12,4 +12,6 @@ require (
 require (
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/graphql-go/handler v0.2.3 // indirect
+	github.com/mitchellh/mapstructure v1.5.0
+	golang.org/x/crypto v0.15.0
 )

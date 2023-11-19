@@ -40,5 +40,8 @@ var Question = graphql.NewObject(graphql.ObjectConfig{
 				return resolvers.GetOptionsByQuestionID(question.ID)
 			},
 		},
+		"userID": &graphql.Field{
+			Type: graphql.Int,
+		},
 	},
 })

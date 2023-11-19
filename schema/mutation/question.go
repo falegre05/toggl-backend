@@ -4,6 +4,7 @@ import (
 	"github.com/graphql-go/graphql"
 	"github.com/togglhire/backend-homework/resolvers"
 	"github.com/togglhire/backend-homework/schema/output"
+	"github.com/togglhire/backend-homework/security"
 )
 
 var AddQuestion = &graphql.Field{
@@ -13,7 +14,9 @@ var AddQuestion = &graphql.Field{
 			Type: graphql.NewNonNull(graphql.String),
 		},
 	},
-	Resolve: resolvers.AddQuestion,
+	Resolve: security.Check(security.PermissionsUser, func(p graphql.ResolveParams) (interface{}, error) {
+		return resolvers.AddQuestion(p.Context, p.Args)
+	}),
 }
 
 var UpdateQuestion = &graphql.Field{
@@ -26,7 +29,9 @@ var UpdateQuestion = &graphql.Field{
 			Type: graphql.NewNonNull(graphql.String),
 		},
 	},
-	Resolve: resolvers.UpdateQuestion,
+	Resolve: security.Check(security.PermissionsUser, func(p graphql.ResolveParams) (interface{}, error) {
+		return resolvers.UpdateQuestion(p.Context, p.Args)
+	}),
 }
 
 var DeleteQuestion = &graphql.Field{
@@ -36,5 +41,7 @@ var DeleteQuestion = &graphql.Field{
 			Type: graphql.NewNonNull(graphql.Int),
 		},
 	},
-	Resolve: resolvers.DeleteQuestion,
+	Resolve: security.Check(security.PermissionsUser, func(p graphql.ResolveParams) (interface{}, error) {
+		return resolvers.DeleteQuestion(p.Context, p.Args)
+	}),
 }
