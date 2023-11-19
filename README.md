@@ -95,6 +95,10 @@ mutation{
 }
 ```
 
+There are also things that I would have liked to do better, like retrieving the results of inserts and updates in a more efficient way. It is the first time I work with sqlite and I don't know how to do or use the RETURNING statement present in PostgresQL or if there is something similar here.
+I have not included unit tests because the code is very simple and almost the only thing I do is to access the database, so it would not be too interesting to test.
+
+
 ## Homework statement
 
 The goal of this assignment is to see how familiar you are with developing APIs in Go. We tried to pick a task that is similar to what you would do at Toggl Hire, while keeping it minimal so you can finish it in a short time.
