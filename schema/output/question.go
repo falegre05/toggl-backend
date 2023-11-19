@@ -16,7 +16,7 @@ var Option = graphql.NewObject(graphql.ObjectConfig{
 		"correct": &graphql.Field{
 			Type: graphql.Boolean,
 		},
-		"questionId": &graphql.Field{
+		"questionID": &graphql.Field{
 			Type: graphql.Int,
 		},
 	},
