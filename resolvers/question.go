@@ -134,8 +134,12 @@ func AddQuestion(ctx context.Context, args map[string]interface{}) (interface{},
 func UpdateQuestion(ctx context.Context, args map[string]interface{}) (interface{}, error) {
 	// Decode input arguments into a structured input object
 	var input struct {
-		ID   int
-		Body string
+		ID      int
+		Body    string
+		Options []struct {
+			Body    string
+			Correct bool
+		}
 	}
 	if err := mapstructure.Decode(args, &input); err != nil {
 		return nil, err
@@ -144,9 +148,41 @@ func UpdateQuestion(ctx context.Context, args map[string]interface{}) (interface
 	// Get the user ID from the context
 	var userID = security.GetUserID(ctx)
 
-	// Update the question in the database
-	_, err := database.GetDBConnection().Exec("UPDATE questions SET body = ? WHERE id = ? AND user_id = ?", input.Body, input.ID, userID)
+	// Begin a new database transaction
+	var tx, err = database.GetDBConnection().Begin()
 	if err != nil {
+		return nil, err
+	}
+
+	// Update the question in the database
+	if _, err = tx.Exec("UPDATE questions SET body = ? WHERE id = ? AND user_id = ?", input.Body, input.ID, userID); err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	// Insert options for the question if they exist
+	if len(input.Options) > 0 {
+		if _, err = tx.Exec("DELETE FROM options WHERE question_id = ?", input.ID); err != nil {
+			tx.Rollback()
+			return nil, err
+		}
+
+		stmt, err := tx.Prepare("INSERT INTO options (body, correct, question_id) VALUES (?, ?, ?)")
+		if err != nil {
+			return nil, err
+		}
+		defer stmt.Close()
+
+		for _, option := range input.Options {
+			_, err := stmt.Exec(option.Body, option.Correct, input.ID)
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	// Commit the transaction if everything is successful
+	if err := tx.Commit(); err != nil {
 		return nil, err
 	}
 

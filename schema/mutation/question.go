@@ -15,7 +15,7 @@ var AddQuestion = &graphql.Field{
 		},
 		"options": &graphql.ArgumentConfig{
 			Type: graphql.NewNonNull(graphql.NewList(graphql.NewInputObject(graphql.InputObjectConfig{
-				Name: "option",
+				Name: "optionsCreate",
 				Fields: graphql.InputObjectConfigFieldMap{
 					"body": &graphql.InputObjectFieldConfig{
 						Type: graphql.NewNonNull(graphql.String),
@@ -40,6 +40,19 @@ var UpdateQuestion = &graphql.Field{
 		},
 		"body": &graphql.ArgumentConfig{
 			Type: graphql.NewNonNull(graphql.String),
+		},
+		"options": &graphql.ArgumentConfig{
+			Type: graphql.NewList(graphql.NewInputObject(graphql.InputObjectConfig{
+				Name: "optionsUpdate",
+				Fields: graphql.InputObjectConfigFieldMap{
+					"body": &graphql.InputObjectFieldConfig{
+						Type: graphql.NewNonNull(graphql.String),
+					},
+					"correct": &graphql.InputObjectFieldConfig{
+						Type: graphql.NewNonNull(graphql.Boolean),
+					},
+				},
+			})),
 		},
 	},
 	Resolve: security.Check(security.PermissionsUser, func(p graphql.ResolveParams) (interface{}, error) {
