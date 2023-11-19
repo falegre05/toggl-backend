@@ -145,7 +145,7 @@ SQLite was chosen to make it easier to test your solution, as it does not requir
 This is the db schema I've been working with:
 ![Database schema](assets/db_schema.png)
 
-I've implemented all basic and bonus requirements plus some other endpoints I found useful during the api development, such as AddOptionToQuesstion, UpdateOption and DeleteOption since they were pretty straight forward.
+I've implemented all basic and bonus requirements plus some other endpoints I found useful during the api development, such as AddOptionToQuestion, UpdateOption and DeleteOption since they were pretty straight forward.
 
 I've prepare two different users called Fer and Toggl as you can see in the populateDB file I've used to populate the database. Both users share a super secure password ("1234") but you can check they can only read and write on their own questions. There is a mutation to add a new user which do not need any token and a login query that, given the name and the password, returns the token to be used in the rest of the mutations and queries.
 
