@@ -3,6 +3,7 @@ package resolvers
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/mitchellh/mapstructure"
 	"github.com/togglhire/backend-homework/database"
@@ -142,3 +143,24 @@ func UpdateQuestion(ctx context.Context, args map[string]interface{}) (interface
 }
 
 // DeleteQuestion deletes an existing question for the current user.
+func DeleteQuestion(ctx context.Context, args map[string]interface{}) (interface{}, error) {
+	id, ok := args["id"].(int)
+	if !ok {
+		return nil, fmt.Errorf("missing or invalid 'id' parameter")
+	}
+
+	var userID = security.GetUserID(ctx)
+
+	// Update the question in the database
+	result, err := database.GetDBConnection().Exec("DELETE FROM questions WHERE id = ? AND user_id = ?", id, userID)
+	if err != nil {
+		return false, err
+	}
+
+	rowsAffected, _ := result.RowsAffected()
+	if rowsAffected == 0 {
+		return false, fmt.Errorf("question with id %d does not exist", id)
+	}
+
+	return true, nil
+}
