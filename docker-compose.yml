@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  # Go program
+  go-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      - PORT=8081
+      - SECRET_KEY=lalala
+    depends_on:
+      - db
+
+  # SQLite database
+  db:
+    image: "keinos/sqlite3:latest"
+    volumes:
+      - ./data:/keinos/sqlite
+    ports:
+      - "5433:5432"
+    networks:
+      - backend-network
+
+networks:
+  backend-network:
+    driver: bridge
