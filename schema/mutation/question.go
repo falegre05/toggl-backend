@@ -13,6 +13,19 @@ var AddQuestion = &graphql.Field{
 		"body": &graphql.ArgumentConfig{
 			Type: graphql.NewNonNull(graphql.String),
 		},
+		"options": &graphql.ArgumentConfig{
+			Type: graphql.NewNonNull(graphql.NewList(graphql.NewInputObject(graphql.InputObjectConfig{
+				Name: "option",
+				Fields: graphql.InputObjectConfigFieldMap{
+					"body": &graphql.InputObjectFieldConfig{
+						Type: graphql.NewNonNull(graphql.String),
+					},
+					"correct": &graphql.InputObjectFieldConfig{
+						Type: graphql.NewNonNull(graphql.Boolean),
+					},
+				},
+			}))),
+		},
 	},
 	Resolve: security.Check(security.PermissionsUser, func(p graphql.ResolveParams) (interface{}, error) {
 		return resolvers.AddQuestion(p.Context, p.Args)

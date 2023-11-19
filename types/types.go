@@ -2,20 +2,20 @@ package types
 
 import "github.com/golang-jwt/jwt"
 
-// Option represents an option in the quiz question
-type Option struct {
-	ID         int    `json:"id" db:"id"`
-	Body       string `json:"body" db:"body"`
-	Correct    bool   `json:"correct" db:"correct"`
-	QuestionID int    `json:"questionId" db:"question_id"`
-}
-
 // Question represents a quiz question with a body and a list of options
 type Question struct {
 	ID      int      `json:"id" db:"id"`
 	Body    string   `json:"body" db:"body"`
 	Options []Option `json:"options,omitempty"`
 	UserID  int      `json:"user_id" db:"user_id"`
+}
+
+// Option represents an option in the quiz question
+type Option struct {
+	ID         int    `json:"id" db:"id"`
+	Body       string `json:"body" db:"body"`
+	Correct    bool   `json:"correct" db:"correct"`
+	QuestionID int    `json:"questionId" db:"question_id"`
 }
 
 // User represents a user in the system

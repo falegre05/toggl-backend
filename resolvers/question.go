@@ -19,6 +19,12 @@ func GetAllQuestions(ctx context.Context) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	for i := range questions {
+		if err := database.GetDBConnection().Select(&questions[i].Options, "SELECT * FROM options WHERE question_id = ?", questions[i].ID); err != nil {
+			return nil, err
+		}
+	}
 	return questions, nil
 }
 
@@ -35,41 +41,67 @@ func GetQuestionByID(ctx context.Context, args map[string]interface{}) (interfac
 
 func getQuestionByID(id, userID int) (types.Question, error) {
 	var question types.Question
-	err := database.GetDBConnection().Get(&question, "SELECT * FROM questions WHERE id= ? AND user_id", id, userID)
-	if err != nil {
+	if err := database.GetDBConnection().Get(&question, "SELECT * FROM questions WHERE id = ? AND user_id = ?", id, userID); err != nil {
 		return types.Question{}, err
 	}
-	return question, err
-}
 
-func GetOptionsByQuestionID(questionID int) (interface{}, error) {
-	var options []types.Option
-	err := database.GetDBConnection().Select(&options, "SELECT * FROM options WHERE question_id = ? ORDER BY id", questionID)
-	if err != nil {
-		return nil, err
+	// var options []types.Option
+	if err := database.GetDBConnection().Select(&question.Options, "SELECT * FROM options WHERE question_id = ?", question.ID); err != nil {
+		return types.Question{}, err
 	}
-	return options, nil
+	return question, nil
 }
 
 func AddQuestion(ctx context.Context, args map[string]interface{}) (interface{}, error) {
-	body, ok := args["body"].(string)
-	if !ok {
-		return nil, fmt.Errorf("missing or invalid 'body' parameter")
+	var input struct {
+		Body    string
+		Options []struct {
+			Body    string
+			Correct bool
+		}
 	}
+
+	mapstructure.Decode(args, &input)
 
 	var userID = security.GetUserID(ctx)
 
-	// Insert the new question into the database
-	result, err := database.GetDBConnection().Exec("INSERT INTO questions (body, user_id) VALUES (?, ?)", body, userID)
+	var tx, err = database.GetDBConnection().Begin()
 	if err != nil {
+		return nil, err
+	}
+
+	// Insert the new question into the database
+	result, err := tx.Exec("INSERT INTO questions (body, user_id) VALUES (?, ?)", input.Body, userID)
+	if err != nil {
+		tx.Rollback()
 		return nil, err
 	}
 
 	// Get the ID of the newly inserted question
-	id, _ := result.LastInsertId()
+	questionID, _ := result.LastInsertId()
+
+	if len(input.Options) > 0 {
+		stmt, err := tx.Prepare("INSERT INTO options (body, correct, question_id) VALUES (?, ?, ?)")
+		if err != nil {
+			return nil, err
+		}
+		defer stmt.Close()
+
+		for _, option := range input.Options {
+			_, err := stmt.Exec(option.Body, option.Correct, questionID)
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	// Commit the transaction if everything is successful
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
 
 	// Return the newly added question
-	return getQuestionByID(int(id), *userID)
+	return getQuestionByID(int(questionID), *userID)
 }
 
 func UpdateQuestion(ctx context.Context, args map[string]interface{}) (interface{}, error) {

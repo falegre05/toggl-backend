@@ -2,8 +2,6 @@ package output
 
 import (
 	"github.com/graphql-go/graphql"
-	"github.com/togglhire/backend-homework/resolvers"
-	"github.com/togglhire/backend-homework/types"
 )
 
 var Option = graphql.NewObject(graphql.ObjectConfig{
@@ -35,10 +33,6 @@ var Question = graphql.NewObject(graphql.ObjectConfig{
 		},
 		"options": &graphql.Field{
 			Type: graphql.NewList(Option),
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				question := p.Source.(types.Question)
-				return resolvers.GetOptionsByQuestionID(question.ID)
-			},
 		},
 		"userID": &graphql.Field{
 			Type: graphql.Int,
