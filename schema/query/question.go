@@ -9,8 +9,16 @@ import (
 
 var Questions = &graphql.Field{
 	Type: graphql.NewList(output.Question),
+	Args: graphql.FieldConfigArgument{
+		"page": &graphql.ArgumentConfig{
+			Type: graphql.NewNonNull(graphql.Int),
+		},
+		"pageSize": &graphql.ArgumentConfig{
+			Type: graphql.NewNonNull(graphql.Int),
+		},
+	},
 	Resolve: security.Check(security.PermissionsUser, func(p graphql.ResolveParams) (interface{}, error) {
-		return resolvers.GetAllQuestions(p.Context)
+		return resolvers.GetAllQuestions(p.Context, p.Args)
 	}),
 }
 

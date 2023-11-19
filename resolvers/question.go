@@ -12,13 +12,25 @@ import (
 )
 
 // GetAllQuestions retrieves all questions for the current user along with their options.
-func GetAllQuestions(ctx context.Context) (interface{}, error) {
+func GetAllQuestions(ctx context.Context, args map[string]interface{}) (interface{}, error) {
+	var pagination struct {
+		Page     int
+		PageSize int
+	}
+
+	if err := mapstructure.Decode(args, &pagination); err != nil {
+		return nil, err
+	}
+
+	// Calculate the offset based on the page and pageSize
+	offset := (pagination.Page - 1) * pagination.PageSize
+
 	// Get the user ID from the context
 	var userID = security.GetUserID(ctx)
 
 	// Retrieve all questions for the current user
 	var questions []types.Question
-	err := database.GetDBConnection().Select(&questions, "SELECT * FROM questions WHERE user_id = ?", userID)
+	err := database.GetDBConnection().Select(&questions, "SELECT * FROM questions WHERE user_id = ? LIMIT ? OFFSET ?", userID, pagination.PageSize, offset)
 	if err != nil {
 		return nil, err
 	}
