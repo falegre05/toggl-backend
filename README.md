@@ -1,5 +1,23 @@
 # Toggl Hire Backend Developer Homework
 
+## What have I done
+
+This is the db schema I've been working with:
+![Database schema](assets/db_schema.png)
+
+I've implemented all basic and bonus requirements plus some other endpoints I found useful during the api development, such as AddOptionToQuesstion, UpdateOption and DeleteOption since they were pretty straight forward.
+
+I've prepare two different users called Fer and Toggl as you can see in the populateDB file I've used to populate the database. Both users share a super secure password ("1234") but you can check they can only read and write on their own questions. There is a mutation to add a new user which do not need any token and a login query that, given the name and the password, returns the token to be used in the rest of the mutations and queries.
+
+Playground is enabled, so please, feel free to test it :)
+
+It should run just by executing the docker compose and the database should also be ready, but if it's not, the code will make sure that the tables exist and then you can use the populateDB.sql file to insert some data.
+
+Here you have some queries and mutations examples:
+
+
+## Homework statement
+
 The goal of this assignment is to see how familiar you are with developing APIs in Go. We tried to pick a task that is similar to what you would do at Toggl Hire, while keeping it minimal so you can finish it in a short time.
 
 Create a new repository on GitHub. You can [use this one as a template](https://github.com/togglhire/backend-homework/generate). Commit your solution to your repository and send us a link to it. If you prefer having the repository private, please add [Nils](https://github.com/nilsolofsson) as a collaborator, or archive it in a `.zip` file and upload it in the test so that we can review it.
@@ -140,13 +158,83 @@ You can use any libraries and frameworks, but all dependencies should be defined
 
 SQLite was chosen to make it easier to test your solution, as it does not require a complicated setup. Please include a way for us to initialise the database schema. This can be in the form of a SQL file, or the app can set up the schema automatically when a new database is created.
 
-## What have I done
 
-This is the db schema I've been working with:
-![Database schema](assets/db_schema.png)
+```graphql
+mutation {
+  addUser(name: "Fer", password: "1234") {
+    id
+    name
+    passwordHash
+  }
+}
+```
+```graphql
+{
+  userLogin(name: "Fer", password: "1234")
+}
+```
 
-I've implemented all basic and bonus requirements plus some other endpoints I found useful during the api development, such as AddOptionToQuestion, UpdateOption and DeleteOption since they were pretty straight forward.
+```graphql
+{
+  questions (page:1 pageSize: 20){
+    body
+    id
+    userID
+    options {
+      body
+      correct
+      id
+      questionID
+    }
+  }
+}
+```
 
-I've prepare two different users called Fer and Toggl as you can see in the populateDB file I've used to populate the database. Both users share a super secure password ("1234") but you can check they can only read and write on their own questions. There is a mutation to add a new user which do not need any token and a login query that, given the name and the password, returns the token to be used in the rest of the mutations and queries.
+```graphql
+mutation {
+  addQuestion(
+    body: "Are you going to work?"
+    options: [{ body: "Yess", correct: true }, { body: "No", correct: false }]
+  ) {
+    body
+    id
+    options {
+      body
+      correct
+      id
+      questionID
+    }
+    userID
+  }
+}
+```
 
-Playground is enabled, so please, feel free to test it :)
+```graphql
+mutation {
+  updateQuestion(
+    id: 1
+    body: "Where does the sun set?"
+    options: [{ body: "east", correct: true }, { body: "west", correct: false }]
+  ) {
+    body
+    id
+    options {
+      body
+      correct
+      id
+      questionID
+    }
+  }
+}
+```
+
+```graphql
+mutation{
+  addOptionToQuestion(questionID:3, body:"yes", correct:true){
+    body
+    correct
+    id
+    questionID
+  }
+}
+```
