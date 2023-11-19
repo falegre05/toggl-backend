@@ -15,6 +15,85 @@ It should run just by executing the docker compose and the database should also 
 
 Here you have some queries and mutations examples:
 
+```graphql
+mutation {
+  addUser(name: "Fer", password: "1234") {
+    id
+    name
+    passwordHash
+  }
+}
+```
+```graphql
+{
+  userLogin(name: "Fer", password: "1234")
+}
+```
+
+```graphql
+{
+  questions (page:1 pageSize: 20){
+    body
+    id
+    userID
+    options {
+      body
+      correct
+      id
+      questionID
+    }
+  }
+}
+```
+
+```graphql
+mutation {
+  addQuestion(
+    body: "Are you going to work?"
+    options: [{ body: "Yess", correct: true }, { body: "No", correct: false }]
+  ) {
+    body
+    id
+    options {
+      body
+      correct
+      id
+      questionID
+    }
+    userID
+  }
+}
+```
+
+```graphql
+mutation {
+  updateQuestion(
+    id: 1
+    body: "Where does the sun set?"
+    options: [{ body: "east", correct: true }, { body: "west", correct: false }]
+  ) {
+    body
+    id
+    options {
+      body
+      correct
+      id
+      questionID
+    }
+  }
+}
+```
+
+```graphql
+mutation{
+  addOptionToQuestion(questionID:3, body:"yes", correct:true){
+    body
+    correct
+    id
+    questionID
+  }
+}
+```
 
 ## Homework statement
 
@@ -159,82 +238,3 @@ You can use any libraries and frameworks, but all dependencies should be defined
 SQLite was chosen to make it easier to test your solution, as it does not require a complicated setup. Please include a way for us to initialise the database schema. This can be in the form of a SQL file, or the app can set up the schema automatically when a new database is created.
 
 
-```graphql
-mutation {
-  addUser(name: "Fer", password: "1234") {
-    id
-    name
-    passwordHash
-  }
-}
-```
-```graphql
-{
-  userLogin(name: "Fer", password: "1234")
-}
-```
-
-```graphql
-{
-  questions (page:1 pageSize: 20){
-    body
-    id
-    userID
-    options {
-      body
-      correct
-      id
-      questionID
-    }
-  }
-}
-```
-
-```graphql
-mutation {
-  addQuestion(
-    body: "Are you going to work?"
-    options: [{ body: "Yess", correct: true }, { body: "No", correct: false }]
-  ) {
-    body
-    id
-    options {
-      body
-      correct
-      id
-      questionID
-    }
-    userID
-  }
-}
-```
-
-```graphql
-mutation {
-  updateQuestion(
-    id: 1
-    body: "Where does the sun set?"
-    options: [{ body: "east", correct: true }, { body: "west", correct: false }]
-  ) {
-    body
-    id
-    options {
-      body
-      correct
-      id
-      questionID
-    }
-  }
-}
-```
-
-```graphql
-mutation{
-  addOptionToQuestion(questionID:3, body:"yes", correct:true){
-    body
-    correct
-    id
-    questionID
-  }
-}
-```
